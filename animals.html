@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Farm Animals Word Connector</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f0f0f0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-container {
+                position: relative;
+                width: 800px;
+                height: 600px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .word-column {
+                position: absolute;
+                width: 200px;
+                top: 50px;
+                display: flex;
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .left-column {
+                left: 100px;
+            }
+
+            .right-column {
+                right: 100px;
+            }
+
+            .word-box {
+                padding: 10px 20px;
+                background: #e8e8e8;
+                border-radius: 5px;
+                cursor: pointer;
+                text-align: center;
+                user-select: none;
+            }
+
+            .word-box:hover {
+                background: #d8d8d8;
+            }
+
+            .connector-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            .score {
+                margin-top: 20px;
+                font-size: 1.2em;
+                color: #333;
+            }
+
+            .reset-button {
+                margin-top: 20px;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 1em;
+            }
+
+            .reset-button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Match the Farm Animals</h1>
+        <div class="game-container">
+            <div class="word-column left-column" id="english-words"></div>
+            <div class="word-column right-column" id="finnish-words"></div>
+            <div class="connector-container">
+                <svg id="connector-svg"></svg>
+            </div>
+        </div>
+        <div class="score">Correct matches: <span id="score">0</span>/8</div>
+        <button class="reset-button" onclick="resetGame()">Reset Game</button>
+
+        <script>
+            const wordPairs = [
+                {
+                    english: "Cow",
+                    finnish: "Lehmä"
+                }, {
+                    english: "Pig",
+                    finnish: "Sika"
+                }, {
+                    english: "Sheep",
+                    finnish: "Lammas"
+                }, {
+                    english: "Horse",
+                    finnish: "Hevonen"
+                }, {
+                    english: "Chicken",
+                    finnish: "Kana"
+                }, {
+                    english: "Rooster",
+                    finnish: "Kukko"
+                }, {
+                    english: "Goat",
+                    finnish: "Vuohi"
+                }, {
+                    english: "Duck",
+                    finnish: "Ankka"
+                }
+            ];
+
+            let connections = [];
+            let dragging = false;
+            let startElement = null;
+            let tempPath = null;
+
+            function shuffle(array) {
+                return array
+                    .slice()
+                    .sort(() => Math.random() - 0.5);
+            }
+
+            function createWordElements() {
+                const englishContainer = document.getElementById('english-words');
+                const finnishContainer = document.getElementById('finnish-words');
+
+                englishContainer.innerHTML = '';
+                finnishContainer.innerHTML = '';
+
+                wordPairs.forEach(pair => {
+                    const div = document.createElement('div');
+                    div.className = 'word-box';
+                    div.textContent = pair.english;
+                    div.dataset.word = pair.english;
+                    div.addEventListener('mousedown', startDragging);
+                    englishContainer.appendChild(div);
+                });
+
+                const shuffledFinnish = shuffle(wordPairs);
+                shuffledFinnish.forEach(pair => {
+                    const div = document.createElement('div');
+                    div.className = 'word-box';
+                    div.textContent = pair.finnish;
+                    div.dataset.word = pair.finnish;
+                    div.addEventListener('mouseup', endDragging);
+                    finnishContainer.appendChild(div);
+                });
+            }
+
+            function startDragging(e) {
+                dragging = true;
+                startElement = e.target;
+                const svg = document.getElementById('connector-svg');
+
+                tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                tempPath.setAttribute('stroke', '#999');
+                tempPath.setAttribute('stroke-width', '4');
+                tempPath.setAttribute('stroke-dasharray', '8,8');
+                tempPath.setAttribute('fill', 'none');
+
+                const startRect = startElement.getBoundingClientRect();
+                const svgRect = svg.getBoundingClientRect();
+                const startX = startRect.left + startRect.width - svgRect.left;
+                const startY = startRect.top + startRect.height / 2 - svgRect.top;
+
+                tempPath.setAttribute('d', `M ${startX} ${startY} C ${startX} ${startY}, ${startX} ${startY}, ${startX} ${startY}`);
+                svg.appendChild(tempPath);
+
+                document.addEventListener('mousemove', updateLine);
+            }
+
+            function updateLine(e) {
+                if (!dragging || !tempPath || !startElement) 
+                    return;
+                
+                const svg = document.getElementById('connector-svg');
+                const svgRect = svg.getBoundingClientRect();
+                const startRect = startElement.getBoundingClientRect();
+
+                const startX = startRect.left + startRect.width - svgRect.left;
+                const startY = startRect.top + startRect.height / 2 - svgRect.top;
+                const endX = e.clientX - svgRect.left;
+                const endY = e.clientY - svgRect.top;
+
+                const controlPoint1X = startX + (endX - startX) * 0.5;
+                const controlPoint2X = endX - (endX - startX) * 0.5;
+
+                tempPath.setAttribute('d', `M ${startX} ${startY} C ${controlPoint1X} ${startY}, ${controlPoint2X} ${endY}, ${endX} ${endY}`);
+            }
+
+            function endDragging(e) {
+                if (!dragging || !startElement) 
+                    return;
+                
+                const endElement = e.target;
+                if (endElement.classList.contains('word-box')) {
+                    const englishWord = startElement.dataset.word;
+                    const finnishWord = endElement.dataset.word;
+
+                    const isCorrect = wordPairs.some(pair => pair.english === englishWord && pair.finnish === finnishWord);
+
+                    const connection = {
+                        start: startElement,
+                        end: endElement,
+                        correct: isCorrect
+                    };
+
+                    connections = connections.filter(conn => conn.start !== startElement && conn.end !== endElement);
+
+                    connections.push(connection);
+                    updateConnectors();
+                    updateScore();
+                }
+
+                if (tempPath) {
+                    tempPath.remove();
+                    tempPath = null;
+                }
+
+                dragging = false;
+                startElement = null;
+                document.removeEventListener('mousemove', updateLine);
+            }
+
+            function updateConnectors() {
+                const svg = document.getElementById('connector-svg');
+                svg.innerHTML = '';
+
+                connections.forEach(conn => {
+                    const startRect = conn
+                        .start
+                        .getBoundingClientRect();
+                    const endRect = conn
+                        .end
+                        .getBoundingClientRect();
+                    const svgRect = svg.getBoundingClientRect();
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const startX = startRect.left + startRect.width - svgRect.left;
+                    const startY = startRect.top + startRect.height / 2 - svgRect.top;
+                    const endX = endRect.left - svgRect.left;
+                    const endY = endRect.top + endRect.height / 2 - svgRect.top;
+
+                    const controlPoint1X = startX + (endX - startX) * 0.5;
+                    const controlPoint2X = endX - (endX - startX) * 0.5;
+
+                    path.setAttribute('d', `M ${startX} ${startY} C ${controlPoint1X} ${startY}, ${controlPoint2X} ${endY}, ${endX} ${endY}`);
+                    path.setAttribute(
+                        'stroke', conn.correct
+                        ? '#4CAF50'
+                        : '#999');
+                    path.setAttribute('stroke-width', '4');
+                    path.setAttribute('fill', 'none');
+                    if (!conn.correct) {
+                        path.setAttribute('stroke-dasharray', '8,8');
+                    }
+
+                    svg.appendChild(path);
+                });
+            }
+
+            function updateScore() {
+                const score = connections
+                    .filter(conn => conn.correct)
+                    .length;
+                document
+                    .getElementById('score')
+                    .textContent = score;
+            }
+
+            function resetGame() {
+                connections = [];
+                const svg = document.getElementById('connector-svg');
+                svg.innerHTML = '';
+                createWordElements();
+                updateScore();
+            }
+
+            createWordElements();
+            window.addEventListener('resize', updateConnectors);
+        </script>
+    </body>
+</html>
