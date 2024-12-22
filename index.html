@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tontun Jouluillallinen</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            /* Previous styles remain the same */
+            @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Comic+Neue:wght@400;700&display=swap');
+
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                background-color: #ff424f;
+                background-image: radial-gradient(circle at 25px 25px, #ffffff 4px, transparent 0), radial-gradient(circle at 75px 75px, #ffffff 4px, transparent 0);
+                background-size: 100px 100px;
+                font-family: 'Comic Neue', cursive;
+                color: #fff;
+                animation: snowfall 20s linear infinite;
+            }
+
+            /* All previous styles remain the same... */
+            @keyframes snowfall {
+                0% {
+                    background-position: 0 0;
+                }
+                100% {
+                    background-position: 100px 100px;
+                }
+            }
+
+            @keyframes wiggle {
+                0% {
+                    transform: rotate(-2deg);
+                }
+                50% {
+                    transform: rotate(2deg);
+                }
+                100% {
+                    transform: rotate(-2deg);
+                }
+            }
+
+            @keyframes bounce {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 40px auto;
+                padding: 20px;
+            }
+
+            .menu-card {
+                background-color: #2c9f45;
+                border: 8px solid #ffffff;
+                border-radius: 30px;
+                padding: 40px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+                position: relative;
+            }
+
+            .menu-card::before {
+                content: '';
+                position: absolute;
+                top: -20px;
+                left: -20px;
+                right: -20px;
+                bottom: -20px;
+                border: 4px dashed #ffffff;
+                border-radius: 40px;
+                z-index: -1;
+                animation: wiggle 4s ease-in-out infinite;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            h1 {
+                font-family: 'Bubblegum Sans', cursive;
+                font-size: 4em;
+                color: #ffffff;
+                margin: 0;
+                text-shadow: 4px 4px 0 #ff424f;
+                animation: bounce 2s ease-in-out infinite;
+            }
+
+            .date {
+                font-size: 1.4em;
+                color: #ffffff;
+                margin-top: 10px;
+                font-weight: bold;
+            }
+
+            .section {
+                margin-bottom: 30px;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                padding: 20px;
+            }
+
+            h2 {
+                font-family: 'Bubblegum Sans', cursive;
+                color: #ffffff;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                text-align: center;
+                text-shadow: 2px 2px 0 #ff424f;
+            }
+
+            .dish {
+                margin-bottom: 20px;
+                text-align: center;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                padding: 15px;
+                transition: transform 0.3s;
+            }
+
+            .dish:hover {
+                transform: scale(1.05);
+                cursor: pointer;
+            }
+
+            .dish-name {
+                font-size: 1.4em;
+                margin-bottom: 5px;
+                color: #fff;
+                font-weight: bold;
+            }
+
+            .dish-description {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 1.1em;
+            }
+
+            .decoration {
+                text-align: center;
+                margin: 20px 0;
+                color: #ffffff;
+                font-size: 2em;
+            }
+
+            .elf-hat {
+                position: absolute;
+                top: -30px;
+                right: -20px;
+                font-size: 3em;
+                transform: rotate(30deg);
+            }
+
+            .bells {
+                position: absolute;
+                bottom: -15px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 2em;
+                color: #ffd700;
+                animation: wiggle 2s ease-in-out infinite;
+            }
+
+            @media (max-width: 600px) {
+                .container {
+                    margin: 20px;
+                    padding: 10px;
+                }
+
+                h1 {
+                    font-size: 3em;
+                }
+
+                h2 {
+                    font-size: 2em;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="menu-card" id="menu-container">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <script>
+            // Menu data structure
+            const menuData = {
+                title: "Tontun Jouluillallinen",
+                date: "Jouluaatto - 24. Joulukuuta 2024",
+                sections: {
+                    alkupalat: {
+                        title: "Alkuruoat",
+                        items: [
+                            {
+                                name: "Savukalaa",
+                                description: "Herkullista savustettua kalaa"
+                            }, {
+                                name: "Graavikalaa",
+                                description: "Perinteisesti graavisuolattua lohta"
+                            }, {
+                                name: "Porkkalaa",
+                                description: "Makeita jouluporkkanoita"
+                            }, {
+                                name: "Joulusillit",
+                                description: "Sipulisilli ja matjessilli"
+                            }, {
+                                name: "Joululimppu",
+                                description: "Tuoretta, tummaa joululimppua"
+                            }
+                        ]
+                    },
+                    paaruoat: {
+                        title: "Pääruoat",
+                        items: [
+                            {
+                                name: "Jouluiset Laatikot",
+                                description: "Porkkana- ja perunalaatikko"
+                            }, {
+                                name: "Valkosipuliperunat",
+                                description: "Kermaiset valkosipulilla maustetut perunat"
+                            }, {
+                                name: "Herkkusienimuhennos",
+                                description: "Kermainen sienimuhennos"
+                            }, {
+                                name: "Joulukinkku",
+                                description: "Valmiiksi viipaloitua joulukinkkua"
+                            }, {
+                                name: "Rosolli",
+                                description: "Perinteinen rosolli punajuurilla"
+                            }
+                        ]
+                    },
+                    jalkiruoat: {
+                        title: "Jälkiruoat",
+                        items: [
+                            {
+                                name: "Joulun Makeat",
+                                description: "Joulutorttuja ja pipareita"
+                            }, {
+                                name: "Suklaat ja Konvehdit",
+                                description: "Suklaakonvehteja ja Wienernougat"
+                            }, {
+                                name: "Vihreät Kuulat",
+                                description: "Perinteiset vihreät marmeladikuulat"
+                            }, {
+                                name: "Hedelmät",
+                                description: "Luumuja, omenoita ja mandariineja"
+                            }, {
+                                name: "Joulutee",
+                                description: "Joulu- tai mustaa teetä"
+                            }
+                        ]
+                    }
+                },
+                decorations: [
+                    [
+                        'candy-cane', 'star', 'candy-cane'
+                    ],
+                    [
+                        'snowflake', 'star', 'snowflake'
+                    ],
+                    [
+                        'bell', 'star', 'bell'
+                    ],
+                    [
+                        'gift', 'star', 'gift'
+                    ],
+                    [
+                        'holly-berry', 'star', 'holly-berry'
+                    ]
+                ]
+            };
+
+            // Function to create decoration elements
+            function createDecoration(icons) {
+                const decoration = document.createElement('div');
+                decoration.className = 'decoration';
+                icons.forEach(icon => {
+                    const i = document.createElement('i');
+                    i.className = `fas fa-${icon}`;
+                    decoration.appendChild(i);
+                });
+                return decoration;
+            }
+
+            // Function to create a dish element
+            function createDish(dish) {
+                const dishEl = document.createElement('div');
+                dishEl.className = 'dish';
+                dishEl.innerHTML = `
+                <div class="dish-name">${dish.name}</div>
+                <div class="dish-description">${dish.description}</div>
+            `;
+                return dishEl;
+            }
+
+            // Function to render the menu
+            function renderMenu() {
+                const container = document.getElementById('menu-container');
+
+                // Add elf hat
+                const elfHat = document.createElement('div');
+                elfHat.className = 'elf-hat';
+                elfHat.textContent = '🎅';
+                container.appendChild(elfHat);
+
+                // Add header
+                const header = document.createElement('div');
+                header.className = 'header';
+                header.innerHTML = `
+                <h1>${menuData.title}</h1>
+                <div class="date">${menuData.date}</div>
+            `;
+                container.appendChild(header);
+
+                // Add sections
+                let decorationIndex = 0;
+                for (const [key, section] of Object.entries(menuData.sections)) {
+                    container.appendChild(createDecoration(menuData.decorations[decorationIndex]));
+
+                    const sectionEl = document.createElement('div');
+                    sectionEl.className = 'section';
+
+                    const title = document.createElement('h2');
+                    title.textContent = section.title;
+                    sectionEl.appendChild(title);
+
+                    section
+                        .items
+                        .forEach(item => {
+                            sectionEl.appendChild(createDish(item));
+                        });
+
+                    container.appendChild(sectionEl);
+                    decorationIndex = (decorationIndex + 1) % menuData.decorations.length;
+                }
+
+                // Add bells decoration at the bottom
+                const bells = document.createElement('div');
+                bells.className = 'bells';
+                bells.textContent = '🔔';
+                container.appendChild(bells);
+            }
+
+            // Initialize the menu when the page loads
+            document.addEventListener('DOMContentLoaded', renderMenu);
+        </script>
+    </body>
+</html>
